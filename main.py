@@ -4,7 +4,7 @@ from algoritmos import bbs, euleriano
 
 
 #bbs("karate.net", 1)
-a = Graph("ex/ContemCicloEuleriano.net")
+a = Graph("ex/fln_pequena.net")
 #euleriano(a)
 #a.euleriano()
 #print(a.getNumberOfVertices())
@@ -16,5 +16,5 @@ a = Graph("ex/ContemCicloEuleriano.net")
 #a.printBBS(1)
 #a.floydWarshall()
 #a.showFloydWarshall()
-d, ant = a.dijkstra(3)
+d, ant = a.dijkstra(6)
 a.showDijkstra(d, ant)

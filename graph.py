@@ -173,7 +173,6 @@ class Graph:
                 if c[i] == False:
                     if d[i] < d[u] or u == -1:
                         u = i
-
             c[u] = True
 
             if d[u] == math.inf:
@@ -188,7 +187,7 @@ class Graph:
         return d, a
 
     def showDijkstra(self, d, ant):
-        print(d, ant)
+        #print(d, ant)
         for i in range(len(d)):
             string = f'{i+1}: '
             nList = []
@@ -196,11 +195,13 @@ class Graph:
             while True:
                 if at == None:
                     break
-
                 nList.insert(0, at)
-                at = ant[at]
+                at = ant[at-1]
 
-            print(nList)
+            for j in nList:
+                string += str(j)+","
+            string += str(i+1)+"; d="+(str(d[i]))
+            print(string)
 
 
 
