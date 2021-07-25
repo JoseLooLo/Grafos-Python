@@ -1,6 +1,8 @@
 from vertice import Vertice
 from collections import deque
 
+import math
+
 class Graph:
     def __init__(self, filename):
         self.nVertices = 0
@@ -154,7 +156,51 @@ class Graph:
 
     def showFloydWarshall(self):
         for i in range(1,self.nVertices+1):
-            string = f'{i}:'
-            for j in range(1,self.nVertices+1):
+            string = f'{i}:{self.vList[i].eList[1]}'
+            for j in range(2,self.nVertices+1):
                 string += f',{self.vList[i].eList[j]}'
             print(string)
+
+    def dijkstra(self, start):
+        d = [math.inf for v in self.vList]
+        a = [None for v in self.vList]
+        c = [False for v in self.vList]
+        d[start-1] = 0
+
+        while False in c:
+            u = -1
+            for i in range(len(d)):
+                if c[i] == False:
+                    if d[i] < d[u] or u == -1:
+                        u = i
+
+            c[u] = True
+
+            if d[u] == math.inf:
+                break
+
+            for k in [x for x in self.getNeighbors(u+1) if c[x-1] == False]:
+                if (self.hasEdge(u+1, k)):
+                    if d[k-1] > d[u] + (self.vList[u+1].eList[k]):
+                        d[k-1] = int(d[u] + (self.vList[u+1].eList[k]))
+                        a[k-1] = int(u+1)
+
+        return d, a
+
+    def showDijkstra(self, d, ant):
+        print(d, ant)
+        for i in range(len(d)):
+            string = f'{i+1}: '
+            nList = []
+            at = ant[i]
+            while True:
+                if at == None:
+                    break
+
+                nList.insert(0, at)
+                at = ant[at]
+
+            print(nList)
+
+
+
