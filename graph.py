@@ -128,3 +128,33 @@ class Graph:
                 if (d[j] == i):
                     a += " "+str(j)
             print(a)
+
+    def floydWarshall(self):
+        nv = self.nVertices
+        for i in range(1, nv+1):
+            for j in range(1, nv+1):
+                for k in range(1, nv+1):
+                    try:
+                        v1 = int(self.vList[i].eList[j])
+                    except:
+                        if i == j:
+                            v1 = 0
+                        else:
+                            v1 = None
+                    try:
+                        v2 = int(self.vList[i].eList[k] + self.vList[k].eList[j])
+                    except:
+                        v2 = v1
+                    if v2 == None:
+                        self.vList[i].eList[j] = None
+                    elif v1 == None:
+                        self.vList[i].eList[j] = v2
+                    else:
+                        self.vList[i].eList[j] = min(v1, v2)
+
+    def showFloydWarshall(self):
+        for i in range(1,self.nVertices+1):
+            string = f'{i}:'
+            for j in range(1,self.nVertices+1):
+                string += f',{self.vList[i].eList[j]}'
+            print(string)
