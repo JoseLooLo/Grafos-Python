@@ -1,7 +1,11 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from vertice import Vertice
 from collections import deque
 
 import math
+import copy
 
 class Graph:
     def __init__(self, filename):
@@ -11,7 +15,7 @@ class Graph:
         self.readFile(filename)
 
     def readFile(self, filename):
-        with open(filename) as f:
+        with open(filename, encoding="UTF-8") as f:
             content = f.readlines()
             self.nVertices = int(content[0].split()[1])
             for i in range(1, self.nVertices+1):
@@ -28,7 +32,6 @@ class Graph:
 
     def insertEdge(self, vertex_v, vertex_q, weight):
         self.vList[vertex_v].insertEdge(vertex_q, weight)
-        self.vList[vertex_q].insertEdge(vertex_v, weight)
 
     def getNumberOfVertices(self):
         return self.nVertices
@@ -203,5 +206,99 @@ class Graph:
             string += str(i+1)+"; d="+(str(d[i]))
             print(string)
 
+    def DFSU(self, index, alreadyVisited, first):
+        alreadyVisited[index-1] = True
+        if (first):
+            print(f"{index}",end='')
+        else:
+            print(f",{index}",end='')
 
+        for vertex in self.vList[index].v:
+            if (alreadyVisited[vertex-1] == False):
+                self.DFSU(vertex, alreadyVisited, 0)
 
+    def newViseted(self, index, alreadyVisited, stack):
+        alreadyVisited[index-1] = True
+
+        for vertex in self.vList[index].v:
+            if (alreadyVisited[vertex-1] == False):
+                self.newViseted(vertex, alreadyVisited, stack)
+        
+        stack.append(index)
+
+    def transposeGraph(self):
+        newVertex = copy.deepcopy(self)
+
+        for vertex in newVertex.vList:
+            newVertex.vList[vertex].eList = {}
+            newVertex.vList[vertex].degree = 0
+            newVertex.vList[vertex].v = []
+
+        for vertex in self.vList:
+            for v in self.vList[vertex].v:
+                newVertex.vList[v].insertEdge(vertex,
+                self.vList[vertex].eList[v])
+
+        return newVertex
+
+    def showSCC(self):
+        stack = []
+        alreadyVisited = [False] * (self.nVertices)
+
+        for i in range(1, self.nVertices+1):
+            if (alreadyVisited[i-1] == False):
+                self.newViseted(i, alreadyVisited, stack)
+
+        transposedGraph = self.transposeGraph()
+
+        alreadyVisited = [False] * (self.nVertices)
+
+        while stack:
+            i = stack.pop()
+            if (alreadyVisited[i-1] == False):
+                transposedGraph.DFSU(i, alreadyVisited, 1)
+                print("")
+
+    def ordenacaoTopologica(self):
+        c = [False for n in range (self.getNumberOfVertices()+1)]
+        O = []
+
+        for i in range(1,self.nVertices+1):
+            if not c[i]:
+                self.ordenacaoTopologicaDFS(i, c, O)
+
+        for i in range(len(O)-1):
+            text = O[i].replace("\"", "")
+            print(f"{text} -> ", end="")
+        print(O[len(O)-1].replace("\"",""))
+
+    def ordenacaoTopologicaDFS(self, vertice, c, O):
+        c[vertice] = True
+        for v in self.getNeighbors(vertice):
+            if not c[v]:
+                self.ordenacaoTopologicaDFS(v, c, O)
+        O.insert(0, self.vList[vertice].getLabel())
+
+    def kruskal(self):
+        A = []
+        S = [[n] for n in range (0, self.getNumberOfVertices()+1)]
+        E = {}
+        soma = 0
+        for v in self.vList:
+            for key, peso in self.vList[v].eList.items():
+                E[(v,key)] = peso
+
+        for i in sorted(E, key = E.get):
+            v1 = i[0]
+            v2 = i[1]
+            if v1 not in S[v2]:
+                soma += E[i]
+                A.append(i)
+                K = S[v1] + S[v2]
+                for j in K:
+                    S[j] = K
+        print(soma)
+
+        for i in range(len(A)-1):
+            print(f"{A[i][0]}-{A[i][1]}, ", end="")
+        print(f"{A[len(A)-1][0]}-{A[len(A)-1][1]}")
